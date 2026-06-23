@@ -3,58 +3,48 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>JLPT N4 – Bài 26–50 Quiz</title>
+<title>JLPT N4 – Quiz</title>
 
 <style>
     * { box-sizing: border-box; }
 
     body {
-        font-family: "Segoe UI", Arial, sans-serif;
+        font-family: Arial, sans-serif;
         background: #f6f7fb;
         margin: 0;
         padding: 0;
-        display: flex;
         overflow-x: hidden;
     }
 
-    /* ============================
-       PC VIEW
-    ============================ */
-    .pc-view { display: block; }
-    .mobile-view { display: none; }
-
-    /* ============================
-       SIDEBAR – PC
-    ============================ */
+    /* SIDEBAR */
     .sidebar {
-        width: 180px;
+        width: 220px;
         background: #ffffff;
-        border-right: 2px solid #e0e0e0;
-        padding: 8px 0;
+        border-right: 2px solid #ddd;
         height: 100vh;
         position: fixed;
-        left: 0;
+        left: -220px;
         top: 0;
-        overflow-y: auto;
-        z-index: 10;
+        padding: 10px;
+        transition: 0.3s ease;
+        z-index: 1000;
+    }
+
+    .sidebar.open {
+        left: 0;
     }
 
     .sidebar h3 {
-        font-size: 15px;
-        margin: 0 0 8px 0;
-        padding: 0 12px;
+        margin-top: 0;
+        font-size: 18px;
         color: #333;
-        font-weight: 600;
     }
 
     .nav-item {
-        padding: 6px 12px;
-        font-size: 14px;
+        padding: 8px 10px;
+        border-radius: 6px;
         cursor: pointer;
-        border-bottom: 1px solid #eee;
-        display: flex;
-        align-items: center;
-        gap: 6px;
+        margin-bottom: 4px;
     }
 
     .nav-item:hover {
@@ -63,83 +53,81 @@
 
     .nav-item.active {
         background: #4a6cf7;
-        color: white;
-        font-weight: 600;
+        color: #fff;
+        font-weight: bold;
     }
 
-    .nav-icon {
-        width: 6px;
-        height: 6px;
-        background: #4a6cf7;
-        border-radius: 50%;
+    /* OVERLAY */
+    #overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.4);
+        display: none;
+        z-index: 900;
     }
 
-    .nav-item.active .nav-icon {
-        background: white;
+    #overlay.show {
+        display: block;
     }
 
-    /* ============================
-       MAIN CONTENT – PC
-    ============================ */
-    .container {
-        width: calc(100% - 200px);
-        padding: 40px;
-        margin-left: 200px;
+    /* CONTENT */
+    .content {
+        padding: 20px;
+        margin-left: 0;
+        max-width: 800px;
+        margin-inline: auto;
     }
 
-    h2 {
-        text-align: center;
-        margin-bottom: 25px;
-        color: #333;
+    #menuBtn {
+        font-size: 32px;
+        cursor: pointer;
+        color: #4a6cf7;
+        margin-bottom: 10px;
+        display: inline-block;
+    }
+
+    h1 {
+        margin: 10px 0 20px;
+        font-size: 24px;
     }
 
     .progress {
-        font-size: 18px;
-        font-weight: 600;
-        margin-bottom: 20px;
+        margin-bottom: 10px;
+        font-weight: bold;
         color: #4a6cf7;
-        text-align: center;
     }
 
     .question-box {
-        padding: 20px;
         background: #eef3ff;
-        border-left: 6px solid #4a6cf7;
+        padding: 20px;
         border-radius: 10px;
+        border-left: 6px solid #4a6cf7;
+        font-size: 24px;
+        font-weight: bold;
         margin-bottom: 20px;
     }
 
-    .kanji {
-        font-size: 28px;
-        font-weight: 700;
-        color: #2c3e50;
-    }
-
     .hiragana {
-        font-size: 20px;
-        margin-top: 8px;
+        font-size: 18px;
         color: #4a6cf7;
+        margin-top: 8px;
         display: none;
     }
 
-    .answers-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 12px;
-    }
-
-    .answer-btn {
+    .answers button {
+        display: block;
         width: 100%;
-        padding: 18px;
+        padding: 15px;
+        margin-bottom: 10px;
         font-size: 18px;
-        border-radius: 12px;
-        border: 2px solid #dce1eb;
+        border-radius: 10px;
+        border: 2px solid #ddd;
         background: white;
         cursor: pointer;
-        transition: 0.2s;
+        text-align: left;
     }
 
-    .answer-btn:hover {
+    .answers button:hover {
         background: #f0f3ff;
         border-color: #4a6cf7;
     }
@@ -150,337 +138,162 @@
     #nextBtn {
         width: 100%;
         padding: 15px;
-        margin-top: 20px;
         font-size: 18px;
-        border: none;
-        border-radius: 10px;
         background: #4a6cf7;
         color: white;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        margin-top: 10px;
+    }
+
+    label {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 14px;
+        margin-bottom: 10px;
+    }
+
+    /* POPUP KẾT QUẢ */
+    .result-popup {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.45);
+        justify-content: center;
+        align-items: center;
+        z-index: 2000;
+    }
+
+    .result-box {
+        background: #fff;
+        width: 360px;
+        max-width: 90%;
+        border-radius: 16px;
+        padding: 20px;
+        text-align: center;
+    }
+
+    .result-box h2 {
+        margin-top: 0;
+    }
+
+    .result-summary {
+        display: flex;
+        gap: 10px;
+        margin: 15px 0;
+    }
+
+    .stat {
+        flex: 1;
+        padding: 10px;
+        border-radius: 10px;
+    }
+
+    .correct-stat { background: #d4f8d4; }
+    .wrong-stat   { background: #ffd6d6; }
+
+    .close-btn {
+        margin-top: 10px;
+        padding: 10px 16px;
+        border-radius: 8px;
+        border: none;
+        background: #4a6cf7;
+        color: #fff;
         cursor: pointer;
     }
 
-    /* ============================
-       POPUP KẾT QUẢ
-    ============================ */
-    .result-popup{
-        display:none;
-        position:fixed;
-        inset:0;
-        background:rgba(0,0,0,.45);
-        justify-content:center;
-        align-items:center;
-        z-index:9999;
-    }
-    .result-box{
-        background:#fff;
-        width:420px;
-        max-width:90%;
-        border-radius:20px;
-        padding:24px;
-        text-align:center;
-    }
-    .result-summary{
-        display:flex;
-        gap:12px;
-        margin:20px 0;
-    }
-    .stat{
-        flex:1;
-        padding:12px;
-        border-radius:12px;
-    }
-    .correct-stat{background:#98f1d1;}
-    .wrong-stat{background:#ffc38c;}
-
-    /* ============================
-       MOBILE VIEW – APP STYLE
-    ============================ */
-    @media (max-width: 768px) {
-
-        body { display: block; }
-
-        .pc-view { display: none; }
-        .mobile-view { display: block; }
-
-        /* SIDEBAR TRƯỢT */
-        .sidebar {
-            width: 220px;
-            height: 100vh;
-            position: fixed;
-            left: -220px;
-            top: 0;
-            background: white;
-            transition: 0.3s ease;
-            z-index: 9999;
-            border-right: 2px solid #ddd;
+    /* MOBILE */
+    @media (min-width: 900px) {
+        .content {
+            margin-left: 240px;
         }
-
-        .sidebar.open {
+        #menuBtn {
+            display: none;
+        }
+        .sidebar {
             left: 0;
         }
-
         #overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.4);
-            display: none;
-            z-index: 9998;
-        }
-
-        #overlay.show {
-            display: block;
-        }
-
-        #menuBtn {
-            font-size: 32px;
-            padding: 10px;
-            cursor: pointer;
-            color: #4a6cf7;
-        }
-
-        .mobile-view {
-            padding: 16px;
-            margin-left: 0;
-            width: 100%;
-        }
-
-        .mobile-title {
-            font-size: 26px;
-            font-weight: 700;
-            text-align: center;
-            margin-bottom: 16px;
-            color: #4a6cf7;
-        }
-
-        .mobile-question {
-            background: #eef3ff;
-            padding: 20px;
-            border-radius: 12px;
-            margin-bottom: 16px;
-            font-size: 24px;
-            font-weight: 700;
-            text-align: center;
-            word-wrap: break-word;
-        }
-
-        .mobile-answers button {
-            width: 100%;
-            padding: 16px;
-            margin-bottom: 12px;
-            font-size: 18px;
-            border-radius: 12px;
-            border: 2px solid #dce1eb;
-            background: white;
-            white-space: normal;
-            word-wrap: break-word;
-            line-height: 1.4;
-        }
-
-        .mobile-next {
-            width: 100%;
-            padding: 16px;
-            font-size: 20px;
-            background: #4a6cf7;
-            color: white;
-            border: none;
-            border-radius: 12px;
-            margin-top: 10px;
+            display: none !important;
         }
     }
 </style>
-</head>
 
+</head>
 <body>
 
 <div id="overlay"></div>
 
 <div class="sidebar" id="sidebar">
     <h3>Danh sách bài</h3>
-    <div id="lessonList"></div>
+    <div class="nav-item" data-lesson="26">Bài 26</div>
+    <div class="nav-item" data-lesson="27">Bài 27</div>
+    <!-- Bạn có thể thêm tiếp ở đây -->
 </div>
 
-<div class="pc-view">
-    <div class="container">
-        <h2 id="title">JLPT N4 – Bài 26</h2>
-        <div class="progress" id="progressText">0 / 0</div>
-
-        <label class="toggle">
-            <input type="checkbox" id="showHira" onchange="toggleHiragana()"> Hiển thị Hiragana
-        </label>
-
-        <div class="question-box">
-            <div class="kanji" id="kanjiText"></div>
-            <div class="hiragana" id="hiraText"></div>
-        </div>
-
-        <div id="answers" class="answers-grid"></div>
-
-        <button id="nextBtn" onclick="nextQuestion()">Next</button>
-    </div>
-</div>
-
-<div class="mobile-view">
+<div class="content">
     <div id="menuBtn">≡</div>
-    <div class="mobile-title" id="m-title">JLPT N4 – Bài 26</div>
-    <div class="mobile-question" id="m-question"></div>
-    <div class="mobile-answers" id="m-answers"></div>
-    <button class="mobile-next" onclick="nextQuestion()">Next</button>
+
+    <h1 id="title">JLPT N4 – Bài 26</h1>
+    <div class="progress" id="progressText">0 / 0</div>
+
+    <label>
+        <input type="checkbox" id="showHira"> Hiển thị Hiragana
+    </label>
+
+    <div class="question-box">
+        <div id="kanjiText">Câu hỏi sẽ hiện ở đây</div>
+        <div class="hiragana" id="hiraText"></div>
+    </div>
+
+    <div class="answers" id="answers"></div>
+
+    <button id="nextBtn">Next</button>
 </div>
 
 <div id="resultPopup" class="result-popup">
-  <div class="result-box">
-    <h2>KẾT QUẢ</h2>
-    <div class="result-summary">
-      <div class="stat correct-stat"><span>✓ Đúng</span><strong id="correctCountText">0</strong></div>
-      <div class="stat wrong-stat"><span>✕ Sai</span><strong id="wrongCountText">0</strong></div>
+    <div class="result-box">
+        <h2>Kết quả</h2>
+        <div class="result-summary">
+            <div class="stat correct-stat">
+                Đúng: <span id="correctCountText">0</span>
+            </div>
+            <div class="stat wrong-stat">
+                Sai: <span id="wrongCountText">0</span>
+            </div>
+        </div>
+        <div>Tổng số câu: <span id="totalQuestionText">0</span></div>
+        <button class="close-btn" id="closeResultBtn">Làm lại</button>
     </div>
-    <div class="total-question">Tổng số câu hỏi: <strong id="totalQuestionText">0</strong></div>
-    <canvas id="resultChart" width="220" height="220"></canvas>
-  </div>
 </div>
 
 <script>
+/* DỮ LIỆU MẪU – BẠN TỰ THÊM TIẾP ĐƯỢC */
 const lessons = {
-  "26": [
+  26: [
     ["みます","見ます／診ます","Xem, khám bệnh"],
-    ["さがします","探します／捜します","Tìm, tìm kiếm"]
+    ["さがします","探します／捜します","Tìm, tìm kiếm"],
+    ["かいます","飼います","Nuôi (động vật)"],
+    ["たてます","建てます","Xây dựng"]
   ],
-  "27": [
-    ["かいます","飼います","Nuôi ( động vật )"],
-    ["たてます","建てます","Xây, xây dựng"]
+  27: [
+    ["ひろいます","拾います","Nhặt lên"],
+    ["おくれます","遅れます","Trễ, muộn"],
+    ["まにあいます","間に合います","Kịp"],
+    ["さんかします","参加します","Tham gia"]
   ]
 };
 
-const lessonListDiv = document.getElementById("lessonList");
-
-for (let i = 26; i <= 50; i++) {
-    const div = document.createElement("div");
-    div.className = "nav-item";
-    div.innerHTML = `<span class="nav-number">${i}</span>`;
-    div.onclick = () => loadLesson(i, div);
-    lessonListDiv.appendChild(div);
-}
-
 let currentLesson = 26;
-let data = lessons[currentLesson] || [];
-let total = data.length;
+let data = lessons[currentLesson];
 let used = new Set();
 let currentIndex = null;
 let correctCount = 0;
 let wrongCount = 0;
 
-function loadLesson(num, element) {
-    currentLesson = num;
-
-    document.querySelectorAll(".nav-item").forEach(btn => btn.classList.remove("active"));
-    element.classList.add("active");
-
-    data = lessons[num] || [];
-    total = data.length;
-
-    used.clear();
-    correctCount = 0;
-    wrongCount = 0;
-
-    document.getElementById("title").textContent = "JLPT N4 – Bài " + num;
-    document.getElementById("m-title").textContent = "JLPT N4 – Bài " + num;
-    document.getElementById("progressText").textContent = `0 / ${total}`;
-
-    updateQuestion();
-}
-
-function toggleHiragana() {
-    document.getElementById("hiraText").style.display =
-        document.getElementById("showHira").checked ? "block" : "none";
-}
-
-function getRandomQuestion() {
-    if (used.size === total) {
-        showResult();
-        return null;
-    }
-
-    let idx;
-    do {
-        idx = Math.floor(Math.random() * total);
-    } while (used.has(idx));
-
-    used.add(idx);
-    document.getElementById("progressText").textContent = `${used.size} / ${total}`;
-    return idx;
-}
-
-function updateQuestion() {
-    if (total === 0) {
-        document.getElementById("kanjiText").textContent = "Chưa có dữ liệu bài này";
-        document.getElementById("m-question").textContent = "Chưa có dữ liệu bài này";
-        document.getElementById("answers").innerHTML = "";
-        document.getElementById("m-answers").innerHTML = "";
-        return;
-    }
-
-    currentIndex = getRandomQuestion();
-    if (currentIndex === null) return;
-
-    const [hira, kanji] = data[currentIndex];
-    const displayWord = kanji.trim() !== "" ? kanji : hira;
-
-    document.getElementById("kanjiText").textContent = displayWord;
-    document.getElementById("hiraText").textContent = hira;
-    document.getElementById("m-question").textContent = displayWord;
-
-    toggleHiragana();
-    loadAnswers();
-}
-
-function loadAnswers() {
-    const correct = data[currentIndex][2];
-    let answers = [correct];
-
-    while (answers.length < 4) {
-        const rand = data[Math.floor(Math.random() * total)][2];
-        if (rand && !answers.includes(rand)) answers.push(rand);
-    }
-
-    answers.sort(() => Math.random() - 0.5);
-
-    const ansDiv = document.getElementById("answers");
-    const mAnsDiv = document.getElementById("m-answers");
-
-    ansDiv.innerHTML = "";
-    mAnsDiv.innerHTML = "";
-
-    answers.forEach(a => {
-        const btn = document.createElement("button");
-        btn.className = "answer-btn";
-        btn.textContent = a;
-        btn.onclick = () => checkAnswer(btn, a);
-        ansDiv.appendChild(btn);
-
-        const mBtn = document.createElement("button");
-        mBtn.textContent = a;
-        mBtn.onclick = () => checkAnswer(mBtn, a);
-        mAnsDiv.appendChild(mBtn);
-    });
-}
-
-function checkAnswer(btn, answer) {
-    const correct = data[currentIndex][2];
-
-    document.querySelectorAll('.answer-btn').forEach(b => b.disabled = true);
-    document.querySelectorAll('.mobile-answers button').forEach(b => b.disabled = true);
-
-    if (answer === correct) {
-        btn.classList.add('correct');
-        correctCount++;
-    } else {
-        btn.classList.add('wrong');
-        wrongCount++;
-    }
-}
-
-function nextQuestion() { updateQuestion(); }
-
+/* SIDEBAR + MOBILE */
 const sidebar = document.getElementById("sidebar");
 const overlay = document.getElementById("overlay");
 const menuBtn = document.getElementById("menuBtn");
@@ -495,34 +308,131 @@ overlay.onclick = () => {
     overlay.classList.remove("show");
 };
 
-function drawResultChart(){
- const canvas=document.getElementById('resultChart');
- if(!canvas) return;
- const ctx=canvas.getContext('2d');
- const totalAnswer=correctCount+wrongCount;
- const ratio=totalAnswer?correctCount/totalAnswer:0;
- const cx=110,cy=110,r=90;
- ctx.clearRect(0,0,220,220);
- ctx.beginPath();ctx.moveTo(cx,cy);ctx.fillStyle='#98f1d1';
- ctx.arc(cx,cy,r,-Math.PI/2,-Math.PI/2+Math.PI*2*ratio);ctx.fill();
- ctx.beginPath();ctx.moveTo(cx,cy);ctx.fillStyle='#ffc38c';
- ctx.arc(cx,cy,r,-Math.PI/2+Math.PI*2*ratio,-Math.PI/2+Math.PI*2);ctx.fill();
- ctx.beginPath();ctx.fillStyle='#fff';ctx.arc(cx,cy,50,0,Math.PI*2);ctx.fill();
- ctx.fillStyle='#333';ctx.font='bold 22px Arial';ctx.textAlign='center';
- ctx.fillText(Math.round(ratio*100)+'%',cx,cy);
+document.querySelectorAll(".nav-item").forEach(item => {
+    item.addEventListener("click", () => {
+        const lesson = Number(item.dataset.lesson);
+        document.querySelectorAll(".nav-item").forEach(i => i.classList.remove("active"));
+        item.classList.add("active");
+        loadLesson(lesson);
+
+        // đóng sidebar trên mobile
+        sidebar.classList.remove("open");
+        overlay.classList.remove("show");
+    });
+});
+
+/* QUIZ */
+function loadLesson(num) {
+    currentLesson = num;
+    data = lessons[num] || [];
+    used.clear();
+    correctCount = 0;
+    wrongCount = 0;
+
+    document.getElementById("title").textContent = "JLPT N4 – Bài " + num;
+    document.getElementById("progressText").textContent = `0 / ${data.length}`;
+    document.getElementById("answers").innerHTML = "";
+    document.getElementById("kanjiText").textContent = "Câu hỏi sẽ hiện ở đây";
+    document.getElementById("hiraText").textContent = "";
+    document.getElementById("hiraText").style.display = "none";
+
+    if (data.length > 0) {
+        loadQuestion();
+    }
 }
 
-function showResult(){
- document.getElementById('totalQuestionText').textContent=total;
- document.getElementById('correctCountText').textContent=correctCount;
- document.getElementById('wrongCountText').textContent=wrongCount;
- document.getElementById('resultPopup').style.display='flex';
- drawResultChart();
+function getRandomQuestion() {
+    if (used.size === data.length) {
+        showResult();
+        return null;
+    }
+
+    let idx;
+    do {
+        idx = Math.floor(Math.random() * data.length);
+    } while (used.has(idx));
+
+    used.add(idx);
+    document.getElementById("progressText").textContent = `${used.size} / ${data.length}`;
+    return idx;
 }
 
-window.onload = function() {
-    const first = document.querySelector('.nav-item');
-    if (first) loadLesson(26, first);
+function loadQuestion() {
+    if (!data || data.length === 0) return;
+
+    currentIndex = getRandomQuestion();
+    if (currentIndex === null) return;
+
+    const [hira, kanji, meaning] = data[currentIndex];
+
+    document.getElementById("kanjiText").textContent = kanji || hira;
+    document.getElementById("hiraText").textContent = hira;
+
+    const showHira = document.getElementById("showHira").checked;
+    document.getElementById("hiraText").style.display = showHira ? "block" : "none";
+
+    let answers = [meaning];
+    while (answers.length < 4 && answers.length < data.length) {
+        const rand = data[Math.floor(Math.random() * data.length)][2];
+        if (!answers.includes(rand)) answers.push(rand);
+    }
+
+    answers.sort(() => Math.random() - 0.5);
+
+    const ansDiv = document.getElementById("answers");
+    ansDiv.innerHTML = "";
+
+    answers.forEach(a => {
+        const btn = document.createElement("button");
+        btn.textContent = a;
+        btn.onclick = () => checkAnswer(btn, a);
+        ansDiv.appendChild(btn);
+    });
+}
+
+function checkAnswer(btn, answer) {
+    const correct = data[currentIndex][2];
+
+    document.querySelectorAll(".answers button").forEach(b => b.disabled = true);
+
+    if (answer === correct) {
+        btn.classList.add("correct");
+        correctCount++;
+    } else {
+        btn.classList.add("wrong");
+        wrongCount++;
+    }
+}
+
+function nextQuestion() {
+    loadQuestion();
+}
+
+document.getElementById("nextBtn").addEventListener("click", nextQuestion);
+
+document.getElementById("showHira").addEventListener("change", () => {
+    const show = document.getElementById("showHira").checked;
+    document.getElementById("hiraText").style.display = show ? "block" : "none";
+});
+
+/* POPUP KẾT QUẢ */
+function showResult() {
+    document.getElementById("correctCountText").textContent = correctCount;
+    document.getElementById("wrongCountText").textContent = wrongCount;
+    document.getElementById("totalQuestionText").textContent = data.length;
+    document.getElementById("resultPopup").style.display = "flex";
+}
+
+document.getElementById("closeResultBtn").addEventListener("click", () => {
+    document.getElementById("resultPopup").style.display = "none";
+    loadLesson(currentLesson);
+});
+
+/* KHỞI TẠO */
+window.onload = () => {
+    const first = document.querySelector('.nav-item[data-lesson="26"]');
+    if (first) first.classList.add("active");
+    loadLesson(26);
 };
 </script>
 
