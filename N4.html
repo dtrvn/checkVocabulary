@@ -91,10 +91,23 @@
         font-size: 24px;
     }
 
-    .progress {
-        margin-bottom: 10px;
+    /* NEW: Change Button (rectangle) */
+    .toggle-btn {
+        padding: 10px 18px;
+        border-radius: 8px;
+        border: 2px solid #79dfc1;
+        background: #79dfc1;
+        color: #ffffff;
+        font-size: 14px;
         font-weight: bold;
-        color: #4a6cf7;
+        cursor: pointer;
+        margin-bottom: 10px;
+        transition: 0.2s;
+    }
+
+    .toggle-btn.active {
+        background: #ffffff;
+        color: #79dfc1;
     }
 
     .question-box {
@@ -107,7 +120,7 @@
         margin-bottom: 20px;
     }
 
-    .hiragana {
+    .hiragana, .meaning {
         font-size: 18px;
         color: #4a6cf7;
         margin-top: 8px;
@@ -135,6 +148,14 @@
     .correct { background: #d4f8d4 !important; border-color: #2ecc71 !important; }
     .wrong   { background: #ffd6d6 !important; border-color: #e74c3c !important; }
 
+    /* NEW: Progress moved down */
+    .progress {
+        margin: 10px 0;
+        font-weight: bold;
+        color: #4a6cf7;
+        text-align: center;
+    }
+
     #nextBtn {
         width: 100%;
         padding: 15px;
@@ -155,7 +176,7 @@
         margin-bottom: 10px;
     }
 
-    /* POPUP KẾT QUẢ */
+    /* POPUP */
     .result-popup {
         display: none;
         position: fixed;
@@ -173,10 +194,6 @@
         border-radius: 16px;
         padding: 20px;
         text-align: center;
-    }
-
-    .result-box h2 {
-        margin-top: 0;
     }
 
     .result-summary {
@@ -204,7 +221,6 @@
         cursor: pointer;
     }
 
-    /* MOBILE */
     @media (min-width: 900px) {
         .content {
             margin-left: 240px;
@@ -220,35 +236,39 @@
         }
     }
 </style>
-
 </head>
+
 <body>
 
 <div id="overlay"></div>
 
 <div class="sidebar" id="sidebar">
-    <h3>Danh sách bài</h3>
+    <h3>Danh sách bài</hh3>
     <div class="nav-item" data-lesson="26">Bài 26</div>
     <div class="nav-item" data-lesson="27">Bài 27</div>
-    <!-- Bạn có thể thêm tiếp ở đây -->
 </div>
 
 <div class="content">
     <div id="menuBtn">≡</div>
 
     <h1 id="title">JLPT N4 – Bài 26</h1>
-    <div class="progress" id="progressText">0 / 0</div>
+
+    <!-- NEW: Change Button -->
+    <button id="toggleBtn" class="toggle-btn">Change question</button>
 
     <label>
-        <input type="checkbox" id="showHira"> Hiển thị Hiragana
+        <input type="checkbox" id="showExtra"> Hiển thị Hiragana
     </label>
 
     <div class="question-box">
         <div id="kanjiText">Câu hỏi sẽ hiện ở đây</div>
         <div class="hiragana" id="hiraText"></div>
+        <div class="meaning" id="meaningText"></div>
     </div>
 
     <div class="answers" id="answers"></div>
+
+    <div class="progress" id="progressText">0 / 0</div>
 
     <button id="nextBtn">Next</button>
 </div>
@@ -265,12 +285,12 @@
             </div>
         </div>
         <div>Tổng số câu: <span id="totalQuestionText">0</span></div>
-        <button class="close-btn" id="closeResultBtn">Làm lại</button>
+        <button class="close-btn" id="closeResultBtn">Test Again</button>
     </div>
 </div>
 
 <script>
-/* DỮ LIỆU MẪU – BẠN TỰ THÊM TIẾP ĐƯỢC */
+/* DỮ LIỆU */
 const lessons = {
   26: [
     ["みます","見ます／診ます","Xem, khám bệnh"],
@@ -293,7 +313,9 @@ let currentIndex = null;
 let correctCount = 0;
 let wrongCount = 0;
 
-/* SIDEBAR + MOBILE */
+let answerMode = "meaning"; 
+
+/* SIDEBAR */
 const sidebar = document.getElementById("sidebar");
 const overlay = document.getElementById("overlay");
 const menuBtn = document.getElementById("menuBtn");
@@ -315,7 +337,6 @@ document.querySelectorAll(".nav-item").forEach(item => {
         item.classList.add("active");
         loadLesson(lesson);
 
-        // đóng sidebar trên mobile
         sidebar.classList.remove("open");
         overlay.classList.remove("show");
     });
@@ -333,12 +354,10 @@ function loadLesson(num) {
     document.getElementById("progressText").textContent = `0 / ${data.length}`;
     document.getElementById("answers").innerHTML = "";
     document.getElementById("kanjiText").textContent = "Câu hỏi sẽ hiện ở đây";
-    document.getElementById("hiraText").textContent = "";
     document.getElementById("hiraText").style.display = "none";
+    document.getElementById("meaningText").style.display = "none";
 
-    if (data.length > 0) {
-        loadQuestion();
-    }
+    if (data.length > 0) nextQuestion();
 }
 
 function getRandomQuestion() {
@@ -357,24 +376,34 @@ function getRandomQuestion() {
     return idx;
 }
 
-function loadQuestion() {
-    if (!data || data.length === 0) return;
-
-    currentIndex = getRandomQuestion();
-    if (currentIndex === null) return;
+function renderQuestion() {
+    if (currentIndex === null || !data[currentIndex]) return;
 
     const [hira, kanji, meaning] = data[currentIndex];
 
-    document.getElementById("kanjiText").textContent = kanji || hira;
+    document.getElementById("kanjiText").textContent = kanji;
     document.getElementById("hiraText").textContent = hira;
+    document.getElementById("meaningText").textContent = meaning;
 
-    const showHira = document.getElementById("showHira").checked;
-    document.getElementById("hiraText").style.display = showHira ? "block" : "none";
+    const showExtra = document.getElementById("showExtra").checked;
 
-    let answers = [meaning];
+    if (answerMode === "meaning") {
+        document.getElementById("hiraText").style.display = showExtra ? "block" : "none";
+        document.getElementById("meaningText").style.display = "none";
+    } else {
+        document.getElementById("meaningText").style.display = showExtra ? "block" : "none";
+        document.getElementById("hiraText").style.display = "none";
+    }
+
+    let correctAnswer = (answerMode === "meaning") ? meaning : hira;
+
+    let answers = [correctAnswer];
+
     while (answers.length < 4 && answers.length < data.length) {
-        const rand = data[Math.floor(Math.random() * data.length)][2];
-        if (!answers.includes(rand)) answers.push(rand);
+        const randRow = data[Math.floor(Math.random() * data.length)];
+        const randValue = (answerMode === "meaning") ? randRow[2] : randRow[0];
+
+        if (!answers.includes(randValue)) answers.push(randValue);
     }
 
     answers.sort(() => Math.random() - 0.5);
@@ -390,8 +419,17 @@ function loadQuestion() {
     });
 }
 
+function nextQuestion() {
+    const idx = getRandomQuestion();
+    if (idx === null) return;
+    currentIndex = idx;
+    renderQuestion();
+}
+
 function checkAnswer(btn, answer) {
-    const correct = data[currentIndex][2];
+    const correct = (answerMode === "meaning")
+        ? data[currentIndex][2]
+        : data[currentIndex][0];
 
     document.querySelectorAll(".answers button").forEach(b => b.disabled = true);
 
@@ -404,18 +442,39 @@ function checkAnswer(btn, answer) {
     }
 }
 
-function nextQuestion() {
-    loadQuestion();
-}
-
 document.getElementById("nextBtn").addEventListener("click", nextQuestion);
 
-document.getElementById("showHira").addEventListener("change", () => {
-    const show = document.getElementById("showHira").checked;
-    document.getElementById("hiraText").style.display = show ? "block" : "none";
+/* NEW: Change Button */
+const toggleBtn = document.getElementById("toggleBtn");
+
+toggleBtn.addEventListener("click", () => {
+    toggleBtn.classList.toggle("active");
+
+    if (toggleBtn.classList.contains("active")) {
+        answerMode = "hira";
+        document.getElementById("showExtra").nextSibling.textContent = " Hiển thị ý nghĩa";
+    } else {
+        answerMode = "meaning";
+        document.getElementById("showExtra").nextSibling.textContent = " Hiển thị Hiragana";
+    }
+
+    renderQuestion();
 });
 
-/* POPUP KẾT QUẢ */
+/* CHECKBOX: HIỂN THỊ PHỤ */
+document.getElementById("showExtra").addEventListener("change", () => {
+    const show = document.getElementById("showExtra").checked;
+
+    if (answerMode === "meaning") {
+        document.getElementById("hiraText").style.display = show ? "block" : "none";
+        document.getElementById("meaningText").style.display = "none";
+    } else {
+        document.getElementById("meaningText").style.display = show ? "block" : "none";
+        document.getElementById("hiraText").style.display = "none";
+    }
+});
+
+/* POPUP */
 function showResult() {
     document.getElementById("correctCountText").textContent = correctCount;
     document.getElementById("wrongCountText").textContent = wrongCount;
@@ -425,7 +484,14 @@ function showResult() {
 
 document.getElementById("closeResultBtn").addEventListener("click", () => {
     document.getElementById("resultPopup").style.display = "none";
-    loadLesson(currentLesson);
+
+    // NEW: Random lại từ đầu
+    used.clear();
+    currentIndex = null;
+    correctCount = 0;
+    wrongCount = 0;
+
+    nextQuestion();
 });
 
 /* KHỞI TẠO */
