@@ -77,9 +77,6 @@
         background: white;
     }
 
-    /* ============================
-       MAIN CONTENT – PC
-    ============================ */
     .container {
         width: calc(100% - 200px);
         padding: 40px;
@@ -159,6 +156,39 @@
     }
 
     /* ============================
+       POPUP KẾT QUẢ
+    ============================ */
+    .result-popup{
+        display:none;
+        position:fixed;
+        inset:0;
+        background:rgba(0,0,0,.45);
+        justify-content:center;
+        align-items:center;
+        z-index:9999;
+    }
+    .result-box{
+        background:#fff;
+        width:420px;
+        max-width:90%;
+        border-radius:20px;
+        padding:24px;
+        text-align:center;
+    }
+    .result-summary{
+        display:flex;
+        gap:12px;
+        margin:20px 0;
+    }
+    .stat{
+        flex:1;
+        padding:12px;
+        border-radius:12px;
+    }
+    .correct-stat{background:#98f1d1;}
+    .wrong-stat{background:#ffc38c;}
+
+    /* ============================
        MOBILE VIEW – APP STYLE
     ============================ */
     @media (max-width: 768px) {
@@ -168,7 +198,6 @@
         .pc-view { display: none; }
         .mobile-view { display: block; }
 
-        /* SIDEBAR TRƯỢT */
         .sidebar {
             width: 220px;
             height: 100vh;
@@ -185,7 +214,6 @@
             left: 0;
         }
 
-        /* Overlay */
         #overlay {
             position: fixed;
             inset: 0;
@@ -198,7 +226,6 @@
             display: block;
         }
 
-        /* Icon menu */
         #menuBtn {
             font-size: 32px;
             padding: 10px;
@@ -206,7 +233,6 @@
             color: #4a6cf7;
         }
 
-        /* MOBILE CONTENT */
         .mobile-view {
             padding: 16px;
             margin-left: 0;
@@ -261,29 +287,16 @@
 
 <body>
 
-<!-- ============================
-     OVERLAY (dùng để đóng sidebar)
-============================ -->
 <div id="overlay"></div>
 
-<!-- ============================
-     SIDEBAR (PC + Mobile Slide)
-============================ -->
 <div class="sidebar" id="sidebar">
     <h3>Danh sách bài</h3>
     <div id="lessonList"></div>
 </div>
 
-<!-- ============================
-     PC VIEW
-============================ -->
 <div class="pc-view">
-
-    <!-- MAIN CONTENT -->
     <div class="container">
-
         <h2 id="title">JLPT N4 – Bài 26</h2>
-
         <div class="progress" id="progressText">0 / 0</div>
 
         <label class="toggle">
@@ -298,31 +311,17 @@
         <div id="answers" class="answers-grid"></div>
 
         <button id="nextBtn" onclick="nextQuestion()">Next</button>
-
     </div>
 </div>
 
-<!-- ============================
-     MOBILE VIEW — APP STYLE
-============================ -->
 <div class="mobile-view">
-
-    <!-- Nút mở sidebar -->
     <div id="menuBtn">≡</div>
-
     <div class="mobile-title" id="m-title">JLPT N4 – Bài 26</div>
-
     <div class="mobile-question" id="m-question"></div>
-
     <div class="mobile-answers" id="m-answers"></div>
-
     <button class="mobile-next" onclick="nextQuestion()">Next</button>
-
 </div>
 
-<!-- ============================
-     POPUP KẾT QUẢ (1 bản duy nhất)
-============================ -->
 <div id="resultPopup" class="result-popup">
   <div class="result-box">
     <h2>KẾT QUẢ</h2>
@@ -336,10 +335,6 @@
 </div>
 
 <script>
-/* ============================
-   DỮ LIỆU BÀI 26–50
-   (Bạn sẽ bổ sung thêm sau)
-============================ */
 const lessons = {
   "26": [
     ["みます","見ます／診ます","Xem, khám bệnh"],
@@ -351,9 +346,6 @@ const lessons = {
   ]
 };
 
-/* ============================
-   TẠO DANH SÁCH BÀI 26 → 50
-============================ */
 const lessonListDiv = document.getElementById("lessonList");
 
 for (let i = 26; i <= 50; i++) {
@@ -364,9 +356,6 @@ for (let i = 26; i <= 50; i++) {
     lessonListDiv.appendChild(div);
 }
 
-/* ============================
-   QUIZ LOGIC
-============================ */
 let currentLesson = 26;
 let data = lessons[currentLesson] || [];
 let total = data.length;
@@ -388,12 +377,9 @@ function loadLesson(num, element) {
     correctCount = 0;
     wrongCount = 0;
 
-    // PC
     document.getElementById("title").textContent = "JLPT N4 – Bài " + num;
-    document.getElementById("progressText").textContent = `0 / ${total}`;
-
-    // MOBILE
     document.getElementById("m-title").textContent = "JLPT N4 – Bài " + num;
+    document.getElementById("progressText").textContent = `0 / ${total}`;
 
     updateQuestion();
 }
@@ -415,10 +401,7 @@ function getRandomQuestion() {
     } while (used.has(idx));
 
     used.add(idx);
-
-    // PC progress
     document.getElementById("progressText").textContent = `${used.size} / ${total}`;
-
     return idx;
 }
 
@@ -437,11 +420,8 @@ function updateQuestion() {
     const [hira, kanji] = data[currentIndex];
     const displayWord = kanji.trim() !== "" ? kanji : hira;
 
-    // PC
     document.getElementById("kanjiText").textContent = displayWord;
     document.getElementById("hiraText").textContent = hira;
-
-    // MOBILE
     document.getElementById("m-question").textContent = displayWord;
 
     toggleHiragana();
@@ -466,14 +446,12 @@ function loadAnswers() {
     mAnsDiv.innerHTML = "";
 
     answers.forEach(a => {
-        // PC
         const btn = document.createElement("button");
         btn.className = "answer-btn";
         btn.textContent = a;
         btn.onclick = () => checkAnswer(btn, a);
         ansDiv.appendChild(btn);
 
-        // MOBILE
         const mBtn = document.createElement("button");
         mBtn.textContent = a;
         mBtn.onclick = () => checkAnswer(mBtn, a);
@@ -484,7 +462,6 @@ function loadAnswers() {
 function checkAnswer(btn, answer) {
     const correct = data[currentIndex][2];
 
-    // Disable all buttons
     document.querySelectorAll('.answer-btn').forEach(b => b.disabled = true);
     document.querySelectorAll('.mobile-answers button').forEach(b => b.disabled = true);
 
@@ -499,9 +476,6 @@ function checkAnswer(btn, answer) {
 
 function nextQuestion() { updateQuestion(); }
 
-/* ============================
-   SIDEBAR TRƯỢT
-============================ */
 const sidebar = document.getElementById("sidebar");
 const overlay = document.getElementById("overlay");
 const menuBtn = document.getElementById("menuBtn");
@@ -516,9 +490,6 @@ overlay.onclick = () => {
     overlay.classList.remove("show");
 };
 
-/* ============================
-   KẾT QUẢ
-============================ */
 function drawResultChart(){
  const canvas=document.getElementById('resultChart');
  if(!canvas) return;
@@ -544,17 +515,11 @@ function showResult(){
  drawResultChart();
 }
 
-/* ============================
-   KHỞI ĐỘNG
-============================ */
 window.onload = function() {
     const first = document.querySelector('.nav-item');
     if (first) loadLesson(26, first);
 };
 </script>
-</body>
-</html>
-
 
 </body>
 </html>
