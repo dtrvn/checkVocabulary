@@ -36,6 +36,7 @@
         left: 0;
         top: 0;
         overflow-y: auto;
+        z-index: 10;
     }
 
     .sidebar h3 {
@@ -77,6 +78,9 @@
         background: white;
     }
 
+    /* ============================
+       MAIN CONTENT – PC
+    ============================ */
     .container {
         width: calc(100% - 200px);
         padding: 40px;
@@ -198,6 +202,7 @@
         .pc-view { display: none; }
         .mobile-view { display: block; }
 
+        /* SIDEBAR TRƯỢT */
         .sidebar {
             width: 220px;
             height: 100vh;
@@ -503,7 +508,7 @@ function drawResultChart(){
  ctx.beginPath();ctx.moveTo(cx,cy);ctx.fillStyle='#ffc38c';
  ctx.arc(cx,cy,r,-Math.PI/2+Math.PI*2*ratio,-Math.PI/2+Math.PI*2);ctx.fill();
  ctx.beginPath();ctx.fillStyle='#fff';ctx.arc(cx,cy,50,0,Math.PI*2);ctx.fill();
- ctx.fillStyle='#333';ctx.font='bold 22px Arial';ctx.textAlign='center';ctx.textBaseline='middle';
+ ctx.fillStyle='#333';ctx.font='bold 22px Arial';ctx.textAlign='center';
  ctx.fillText(Math.round(ratio*100)+'%',cx,cy);
 }
 
