@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Vocabulary Quiz</title>
+<title>JLPT N4 – Bài 26–50 Quiz</title>
 
 <style>
     * { box-sizing: border-box; }
@@ -14,6 +14,7 @@
         margin: 0;
         padding: 0;
         display: flex;
+        overflow-x: hidden;
     }
 
     /* ============================
@@ -34,7 +35,7 @@
         position: fixed;
         left: 0;
         top: 0;
-        overflow: hidden;
+        overflow-y: auto;
     }
 
     .sidebar h3 {
@@ -46,36 +47,28 @@
     }
 
     .nav-item {
-        min-width: 90px;
-        padding: 3px 12px;
-        height: 27px;
-        line-height: 22px;
-        font-size: 13px;
+        padding: 6px 12px;
+        font-size: 14px;
         cursor: pointer;
+        border-bottom: 1px solid #eee;
         display: flex;
         align-items: center;
         gap: 6px;
-        transition: 0.15s;
-        opacity: 0.9;
-        border-bottom: 1px solid #e5e5e5;
-        white-space: nowrap;
     }
 
     .nav-item:hover {
         background: #eef3ff;
-        opacity: 1;
     }
 
     .nav-item.active {
         background: #4a6cf7;
         color: white;
         font-weight: 600;
-        opacity: 1;
     }
 
     .nav-icon {
-        width: 5px;
-        height: 5px;
+        width: 6px;
+        height: 6px;
         background: #4a6cf7;
         border-radius: 50%;
     }
@@ -83,9 +76,6 @@
     .nav-item.active .nav-icon {
         background: white;
     }
-
-    .nav-label-pc { display: inline; }
-    .nav-number { display: inline; }
 
     /* ============================
        MAIN CONTENT – PC
@@ -169,69 +159,62 @@
     }
 
     /* ============================
-       MOBILE VIEW (GIAO DIỆN MỚI)
+       MOBILE VIEW – APP STYLE
     ============================ */
     @media (max-width: 768px) {
 
         body { display: block; }
 
-        /* ẨN PC – HIỆN MOBILE */
         .pc-view { display: none; }
         .mobile-view { display: block; }
 
-        /* ============================
-           SIDEBAR MOBILE
-        ============================ */
-
+        /* SIDEBAR TRƯỢT */
         .sidebar {
-            width: 60px; /* thu nhỏ 1/3 */
-            padding: 6px 0;
+            width: 220px;
+            height: 100vh;
+            position: fixed;
+            left: -220px;
+            top: 0;
+            background: white;
+            transition: 0.3s ease;
+            z-index: 9999;
+            border-right: 2px solid #ddd;
         }
 
-        /* Ẩn chữ "Danh sách bài" */
-        .sidebar h3 {
+        .sidebar.open {
+            left: 0;
+        }
+
+        /* Overlay */
+        #overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.4);
             display: none;
+            z-index: 9998;
+        }
+
+        #overlay.show {
+            display: block;
         }
 
         /* Icon menu */
-        .sidebar::before {
-            content: "≡";
-            display: block;
-            font-size: 26px;
-            text-align: center;
-            margin-bottom: 10px;
+        #menuBtn {
+            font-size: 32px;
+            padding: 10px;
+            cursor: pointer;
             color: #4a6cf7;
-            font-weight: bold;
         }
 
-        /* Bỏ icon tròn */
-        .nav-icon {
-            display: none;
-        }
-
-        .nav-item {
-            padding: 6px 0;
-            height: auto;
-            justify-content: center;
-            font-size: 14px;
-            border-bottom: 1px solid #eee;
-        }
-
-        .nav-label-pc { display: none; }
-        .nav-number { display: inline; }
-
-        /* ============================
-           MOBILE CONTENT
-        ============================ */
-
+        /* MOBILE CONTENT */
         .mobile-view {
-            width: 50%;              /* chỉ 1/2 chiều ngang */
-            margin-left: 60px;       /* chừa chỗ sidebar */
             padding: 16px;
+            margin-left: 0;
+            width: 100%;
         }
 
         .mobile-title {
-            font-size: 22px;
+            font-size: 26px;
             font-weight: 700;
             text-align: center;
             margin-bottom: 16px;
@@ -240,64 +223,61 @@
 
         .mobile-question {
             background: #eef3ff;
-            padding: 16px;
+            padding: 20px;
             border-radius: 12px;
             margin-bottom: 16px;
-            font-size: 20px;
-            font-weight: 600;
+            font-size: 24px;
+            font-weight: 700;
             text-align: center;
             word-wrap: break-word;
         }
 
         .mobile-answers button {
             width: 100%;
-            padding: 14px;
-            margin-bottom: 10px;
+            padding: 16px;
+            margin-bottom: 12px;
             font-size: 18px;
-            border-radius: 10px;
+            border-radius: 12px;
             border: 2px solid #dce1eb;
             background: white;
-
-            /* Cho phép xuống dòng */
             white-space: normal;
             word-wrap: break-word;
-            line-height: 1.3;
+            line-height: 1.4;
         }
 
         .mobile-next {
             width: 100%;
-            padding: 14px;
-            font-size: 18px;
+            padding: 16px;
+            font-size: 20px;
             background: #4a6cf7;
             color: white;
             border: none;
-            border-radius: 10px;
+            border-radius: 12px;
             margin-top: 10px;
         }
     }
-
-.result-popup{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);justify-content:center;align-items:center;z-index:9999;}
-.result-box{background:#fff;width:420px;max-width:90%;border-radius:20px;padding:24px;text-align:center;}
-.result-summary{display:flex;gap:12px;margin:20px 0;}
-.stat{flex:1;padding:12px;border-radius:12px;}
-.correct-stat{background:#98f1d1;}
-.wrong-stat{background:#ffc38c;}
-
 </style>
 </head>
 
 <body>
 
 <!-- ============================
+     OVERLAY (dùng để đóng sidebar)
+============================ -->
+<div id="overlay"></div>
+
+<!-- ============================
+     SIDEBAR (PC + Mobile Slide)
+============================ -->
+<div class="sidebar" id="sidebar">
+    <h3>Danh sách bài</h3>
+    <div id="lessonList"></div>
+</div>
+
+<!-- ============================
      PC VIEW
 ============================ -->
 <div class="pc-view">
-
-    <!-- SIDEBAR -->
-    <div class="sidebar">
-        <h3>Danh sách bài</h3>
-        <div id="lessonList"></div>
-    </div>
 
     <!-- MAIN CONTENT -->
     <div class="container">
@@ -323,9 +303,12 @@
 </div>
 
 <!-- ============================
-     MOBILE VIEW
+     MOBILE VIEW — APP STYLE
 ============================ -->
 <div class="mobile-view">
+
+    <!-- Nút mở sidebar -->
+    <div id="menuBtn">≡</div>
 
     <div class="mobile-title" id="m-title">JLPT N4 – Bài 26</div>
 
@@ -338,7 +321,7 @@
 </div>
 
 <!-- ============================
-     POPUP KẾT QUẢ
+     POPUP KẾT QUẢ (1 bản duy nhất)
 ============================ -->
 <div id="resultPopup" class="result-popup">
   <div class="result-box">
@@ -352,12 +335,10 @@
   </div>
 </div>
 
-<!-- ============================
-     JAVASCRIPT
-============================ -->
 <script>
 /* ============================
-   DỮ LIỆU BÀI 26 (48 từ)
+   DỮ LIỆU BÀI 26–50
+   (Bạn sẽ bổ sung thêm sau)
 ============================ */
 const lessons = {
   "26": [
@@ -378,9 +359,7 @@ const lessonListDiv = document.getElementById("lessonList");
 for (let i = 26; i <= 50; i++) {
     const div = document.createElement("div");
     div.className = "nav-item";
-    div.innerHTML = `
-        <span class="nav-number">${i}</span>
-    `;
+    div.innerHTML = `<span class="nav-number">${i}</span>`;
     div.onclick = () => loadLesson(i, div);
     lessonListDiv.appendChild(div);
 }
@@ -409,10 +388,12 @@ function loadLesson(num, element) {
     correctCount = 0;
     wrongCount = 0;
 
+    // PC
     document.getElementById("title").textContent = "JLPT N4 – Bài " + num;
-    document.getElementById("m-title").textContent = "JLPT N4 – Bài " + num;
-
     document.getElementById("progressText").textContent = `0 / ${total}`;
+
+    // MOBILE
+    document.getElementById("m-title").textContent = "JLPT N4 – Bài " + num;
 
     updateQuestion();
 }
@@ -434,7 +415,10 @@ function getRandomQuestion() {
     } while (used.has(idx));
 
     used.add(idx);
+
+    // PC progress
     document.getElementById("progressText").textContent = `${used.size} / ${total}`;
+
     return idx;
 }
 
@@ -500,6 +484,7 @@ function loadAnswers() {
 function checkAnswer(btn, answer) {
     const correct = data[currentIndex][2];
 
+    // Disable all buttons
     document.querySelectorAll('.answer-btn').forEach(b => b.disabled = true);
     document.querySelectorAll('.mobile-answers button').forEach(b => b.disabled = true);
 
@@ -514,11 +499,26 @@ function checkAnswer(btn, answer) {
 
 function nextQuestion() { updateQuestion(); }
 
-window.onload = function() {
-    const first = document.querySelector('.nav-item');
-    if (first) loadLesson(26, first);
+/* ============================
+   SIDEBAR TRƯỢT
+============================ */
+const sidebar = document.getElementById("sidebar");
+const overlay = document.getElementById("overlay");
+const menuBtn = document.getElementById("menuBtn");
+
+menuBtn.onclick = () => {
+    sidebar.classList.add("open");
+    overlay.classList.add("show");
 };
 
+overlay.onclick = () => {
+    sidebar.classList.remove("open");
+    overlay.classList.remove("show");
+};
+
+/* ============================
+   KẾT QUẢ
+============================ */
 function drawResultChart(){
  const canvas=document.getElementById('resultChart');
  if(!canvas) return;
@@ -543,7 +543,18 @@ function showResult(){
  document.getElementById('resultPopup').style.display='flex';
  drawResultChart();
 }
+
+/* ============================
+   KHỞI ĐỘNG
+============================ */
+window.onload = function() {
+    const first = document.querySelector('.nav-item');
+    if (first) loadLesson(26, first);
+};
 </script>
+</body>
+</html>
+
 
 </body>
 </html>
